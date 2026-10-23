@@ -1,5 +1,7 @@
 # Scanhub
 
+[![CI](https://github.com/gehferanalista/scanhub/actions/workflows/ci.yml/badge.svg)](https://github.com/gehferanalista/scanhub/actions/workflows/ci.yml)
+
 Sistema de conferência documental de notas fiscais de saída. As NFs vêm do ERP e, para cada nota, o usuário anexa documentos comprobatórios (PDF, JPG ou PNG), enviando o arquivo ou digitalizando direto do scanner da estação.
 
 ## Estrutura
@@ -67,6 +69,13 @@ O projeto Docker se chama `scanhub-v2-dev`, para não conflitar com o sistema an
 Com `VITE_ENABLE_MOCKS=true`, o front usa a API simulada pelo MSW (`apps/web/src/mocks`).
 Para usar a API local, defina `VITE_ENABLE_MOCKS=false` e `API_PROXY_TARGET=http://localhost:3333`
 em `apps/web/.env.local`.
+
+## CI
+
+O GitHub Actions (`.github/workflows/ci.yml`) roda a cada push na `main` e em todo pull request:
+formatação, lint, tipos, testes (com um Postgres 16 para os testes de integração) e build.
+No CI, os testes de banco são obrigatórios: se `TEST_DATABASE_URL` faltar, a execução falha em vez
+de pular os testes.
 
 ## API
 

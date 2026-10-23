@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Um novo push no mesmo branch cancela a execução anterior, que ficou obsoleta
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verificar:
+    name: Formatação, lint, tipos, testes e build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      # Postgres para os testes de integração da API (mesma versão da VM)
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: scanhub
+          POSTGRES_USER: scanhub
+          POSTGRES_PASSWORD: scanhub
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U scanhub -d scanhub"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      # O banco *_test é apagado e recriado pelos próprios testes
+      TEST_DATABASE_URL: postgresql://scanhub:scanhub@localhost:5432/scanhub_test
+      TURBO_TELEMETRY_DISABLED: 1
+
+    steps:
+      - uses: actions/checkout@v7
+
+      # Versão do pnpm vem do campo "packageManager" do package.json
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Instalar dependências
+        run: pnpm install --frozen-lockfile
+
+      - name: Formatação
+        run: pnpm format:check
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Tipos
+        run: pnpm typecheck
+
+      - name: Testes
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build

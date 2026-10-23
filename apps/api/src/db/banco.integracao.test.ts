@@ -15,6 +15,11 @@ import {
 
 const url = urlBancoDeTeste()
 
+// Localmente os testes de banco podem ser pulados; no CI, pular seria um falso positivo
+if (!url && process.env.CI) {
+  throw new Error('TEST_DATABASE_URL não definida: os testes de banco são obrigatórios no CI')
+}
+
 describe.skipIf(!url)('banco de dados (Postgres real)', () => {
   let banco: Banco
   const db = () => banco.db

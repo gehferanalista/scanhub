@@ -15,7 +15,7 @@
     },
     "test": {
       "outputs": [],
-      "env": ["TEST_DATABASE_URL"]
+      "env": ["TEST_DATABASE_URL", "CI"]
     }
   }
 }
