@@ -1,4 +1,4 @@
-import type { NotaFiscal, NotaFiscalDetalhe } from '@/features/notas-fiscais/types'
+import type { NotaFiscal, NotaFiscalDetalhe } from '@scanhub/shared'
 import { gerarNotas } from './data'
 
 /** Estado em memória do mock. Alterações (anexos, observações) valem até recarregar a página. */

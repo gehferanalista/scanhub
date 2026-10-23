@@ -5,7 +5,7 @@ import type {
   NotaFiscalDetalhe,
   Observacao,
   TipoDocumento,
-} from '@/features/notas-fiscais/types'
+} from '@scanhub/shared'
 
 /** Credenciais aceitas pelo mock de login. */
 export const usuarioMock = {

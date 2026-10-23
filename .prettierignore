@@ -2,3 +2,5 @@ pnpm-lock.yaml
 dist
 coverage
 .turbo
+# Migrations geradas pelo drizzle-kit
+apps/api/drizzle/meta

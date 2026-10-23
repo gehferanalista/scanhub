@@ -1,3 +1,4 @@
+import type { Documento } from '@scanhub/shared'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { CalendarDays, Eye, FileImage, FileText, Paperclip, Trash2, User } from 'lucide-react'
 import { useState } from 'react'
@@ -18,7 +19,6 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { formatBytes, formatDateTime } from '@/lib/format'
 import { excluirDocumento, notasFiscaisQueries } from '../api'
-import type { Documento } from '../types'
 import { TituloSecao } from './titulo-secao'
 import { VisualizarDocumentoDialog } from './visualizar-documento-dialog'
 

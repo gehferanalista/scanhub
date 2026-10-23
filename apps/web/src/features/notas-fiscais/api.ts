@@ -1,15 +1,16 @@
-import { keepPreviousData, queryOptions } from '@tanstack/react-query'
-import { z } from 'zod'
-import { api } from '@/lib/api'
-import { TAMANHO_PAGINA, type FiltrosNotas } from './filtros'
 import {
   documentoSchema,
   empresaSchema,
   notaFiscalDetalheSchema,
   observacaoSchema,
   paginaNotasSchema,
+  TAMANHO_PAGINA_PADRAO,
   tipoDocumentoSchema,
-} from './types'
+  type FiltrosNotas,
+} from '@scanhub/shared'
+import { keepPreviousData, queryOptions } from '@tanstack/react-query'
+import { z } from 'zod'
+import { api } from '@/lib/api'
 
 export const notasFiscaisQueries = {
   all: () => ['notas-fiscais'] as const,
@@ -18,7 +19,7 @@ export const notasFiscaisQueries = {
       queryKey: [...notasFiscaisQueries.all(), 'list', filtros],
       queryFn: async ({ signal }) => {
         const { data } = await api.get<unknown>('/notas-fiscais', {
-          params: { ...filtros, tamanhoPagina: TAMANHO_PAGINA },
+          params: { ...filtros, tamanhoPagina: TAMANHO_PAGINA_PADRAO },
           signal,
         })
         return paginaNotasSchema.parse(data)

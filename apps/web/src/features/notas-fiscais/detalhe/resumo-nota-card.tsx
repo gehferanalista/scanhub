@@ -1,10 +1,10 @@
+import type { NotaFiscalDetalhe } from '@scanhub/shared'
 import { Banknote, Building, CalendarDays, FileText, Store } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { formatCnpj, formatCurrency, formatDate } from '@/lib/format'
 import { BaseBadge } from '../components/base-badge'
-import type { NotaFiscalDetalhe } from '../types'
 
 export function ResumoNotaCard({ nota }: { nota: NotaFiscalDetalhe }) {
   return (

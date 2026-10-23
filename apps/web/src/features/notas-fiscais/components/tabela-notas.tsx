@@ -1,3 +1,4 @@
+import type { CampoOrdenacao, FiltrosNotas, NotaFiscal } from '@scanhub/shared'
 import { ArrowDown, ArrowUp, ArrowUpDown, Eye } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Link, useLocation } from 'react-router'
@@ -14,8 +15,7 @@ import {
 } from '@/components/ui/table'
 import { formatCnpj, formatCurrency, formatDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
-import type { CampoOrdenacao, FiltrosNotas } from '../filtros'
-import type { EstadoDetalhe, NotaFiscal } from '../types'
+import type { EstadoDetalhe } from '../types'
 import { BaseBadge } from './base-badge'
 
 const TOTAL_COLUNAS = 9

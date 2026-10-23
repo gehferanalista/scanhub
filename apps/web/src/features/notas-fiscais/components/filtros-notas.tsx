@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { BASES, filtrosNotasSchema, type FiltrosNotas } from '@scanhub/shared'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import {
   Building2,
@@ -25,8 +26,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { exportarNotas, notasFiscaisQueries } from '../api'
-import { filtrosSchema, SEM_FILTROS, type FiltrosNotas } from '../filtros'
-import { BASES } from '../types'
+import { SEM_FILTROS } from '../filtros'
 
 /** Radix Select não aceita item com valor vazio; este valor representa "sem filtro". */
 const TODOS = 'todos'
@@ -66,7 +66,7 @@ function paraFiltros(v: FormValues): Partial<FiltrosNotas> {
     ordem: _d,
     pagina: _p,
     ...filtros
-  } = filtrosSchema.parse({
+  } = filtrosNotasSchema.parse({
     ...v,
     empresaId: semTodos(v.empresaId),
     base: semTodos(v.base),

@@ -1,5 +1,6 @@
+import { BASES, type Base } from '@scanhub/shared'
 import { cn } from '@/lib/utils'
-import { BASES, type Base } from '../types'
+import { ESTILO_BASE } from '../types'
 
 export function BaseBadge({ base, className }: { base: Base; className?: string }) {
   const info = BASES[base]
@@ -8,7 +9,7 @@ export function BaseBadge({ base, className }: { base: Base; className?: string 
       title={`${info.nome} — ${info.descricao}`}
       className={cn(
         'inline-flex size-7 items-center justify-center rounded-full text-xs font-semibold',
-        info.className,
+        ESTILO_BASE[base],
         className,
       )}
     >

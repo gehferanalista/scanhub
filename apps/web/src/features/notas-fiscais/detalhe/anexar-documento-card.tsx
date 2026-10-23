@@ -1,3 +1,4 @@
+import { ANEXO_TIPOS_PERMITIDOS, TAMANHO_MAXIMO_ANEXO } from '@scanhub/shared'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { FileText, Loader2, ScanLine, Upload, X } from 'lucide-react'
 import { useState } from 'react'
@@ -16,7 +17,6 @@ import {
 import { formatBytes } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { anexarDocumento, notasFiscaisQueries } from '../api'
-import { ANEXO_ACCEPT, TAMANHO_MAXIMO_ANEXO } from '../types'
 
 function mensagemRejeicao([rejeicao]: FileRejection[]) {
   const codigo = rejeicao?.errors[0]?.code
@@ -50,7 +50,7 @@ export function AnexarDocumentoCard({ notaId }: { notaId: string }) {
   })
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    accept: ANEXO_ACCEPT,
+    accept: ANEXO_TIPOS_PERMITIDOS,
     maxSize: TAMANHO_MAXIMO_ANEXO,
     multiple: false,
     disabled: anexar.isPending,

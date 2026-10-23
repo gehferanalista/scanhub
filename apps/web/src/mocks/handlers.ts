@@ -1,13 +1,16 @@
-import { delay, http, HttpResponse } from 'msw'
-import type { LoginInput } from '@/features/auth/types'
-import { lerFiltros, type FiltrosNotas } from '@/features/notas-fiscais/filtros'
 import {
-  ANEXO_ACCEPT,
+  ANEXO_TIPOS_PERMITIDOS,
   BASES,
+  filtrosNotasSchema,
+  listarNotasQuerySchema,
+  novaObservacaoSchema,
   TAMANHO_MAXIMO_ANEXO,
-  TAMANHO_MAXIMO_OBSERVACAO,
+  type ErroApi,
+  type FiltrosNotas,
+  type LoginInput,
   type NotaFiscal,
-} from '@/features/notas-fiscais/types'
+} from '@scanhub/shared'
+import { delay, http, HttpResponse } from 'msw'
 import {
   empresasMock,
   gerarPdfExemplo,
@@ -75,15 +78,20 @@ function gerarCsv(notas: NotaFiscal[]) {
   return '﻿' + [cabecalho, ...linhas].join('\r\n')
 }
 
-const naoEncontrada = () =>
-  HttpResponse.json({ message: 'Nota fiscal não encontrada' }, { status: 404 })
+/** Resposta de erro no mesmo formato da API real. */
+const erro = (status: number, codigo: string, mensagem: string) =>
+  HttpResponse.json<ErroApi>({ codigo, mensagem }, { status })
+
+const naoEncontrada = () => erro(404, 'NOTA_NAO_ENCONTRADA', 'Nota fiscal não encontrada')
+
+const queryDe = (request: Request) => Object.fromEntries(new URL(request.url).searchParams)
 
 export const handlers = [
   http.post('*/api/auth/login', async ({ request }) => {
     await delay()
     const { email, senha } = (await request.json()) as LoginInput
     if (email !== usuarioMock.email || senha !== usuarioMock.senha) {
-      return HttpResponse.json({ message: 'Credenciais inválidas' }, { status: 401 })
+      return erro(401, 'CREDENCIAIS_INVALIDAS', 'E-mail ou senha inválidos')
     }
     return HttpResponse.json({
       token: 'mock-token',
@@ -99,7 +107,7 @@ export const handlers = [
 
   http.get('*/api/notas-fiscais/exportar', async ({ request }) => {
     await delay()
-    const filtros = lerFiltros(new URL(request.url).searchParams)
+    const filtros = filtrosNotasSchema.parse(queryDe(request))
     return new HttpResponse(gerarCsv(buscarNotas(filtros)), {
       headers: { 'Content-Type': 'text/csv; charset=utf-8' },
     })
@@ -107,9 +115,7 @@ export const handlers = [
 
   http.get('*/api/notas-fiscais', async ({ request }) => {
     await delay()
-    const params = new URL(request.url).searchParams
-    const filtros = lerFiltros(params)
-    const tamanhoPagina = Number(params.get('tamanhoPagina')) || 20
+    const { tamanhoPagina, ...filtros } = listarNotasQuerySchema.parse(queryDe(request))
     const notas = buscarNotas(filtros)
     const inicio = (filtros.pagina - 1) * tamanhoPagina
 
@@ -137,10 +143,10 @@ export const handlers = [
     const tipo = tiposDocumentoMock.find((t) => t.id === form.get('tipoDocumentoId'))
 
     if (!(arquivo instanceof Blob) || !tipo) {
-      return HttpResponse.json({ message: 'Tipo e arquivo são obrigatórios' }, { status: 400 })
+      return erro(400, 'VALIDACAO', 'Tipo e arquivo são obrigatórios')
     }
-    if (!(arquivo.type in ANEXO_ACCEPT) || arquivo.size > TAMANHO_MAXIMO_ANEXO) {
-      return HttpResponse.json({ message: 'Arquivo inválido' }, { status: 422 })
+    if (!(arquivo.type in ANEXO_TIPOS_PERMITIDOS) || arquivo.size > TAMANHO_MAXIMO_ANEXO) {
+      return erro(422, 'ARQUIVO_INVALIDO', 'Arquivo com formato ou tamanho não permitido')
     }
 
     const documento = novoDocumento({
@@ -171,13 +177,12 @@ export const handlers = [
     const nota = encontrarNota(params.id)
     if (!nota) return naoEncontrada()
 
-    const { texto } = (await request.json()) as { texto?: string }
-    const limpo = texto?.trim() ?? ''
-    if (!limpo || limpo.length > TAMANHO_MAXIMO_OBSERVACAO) {
-      return HttpResponse.json({ message: 'Observação inválida' }, { status: 422 })
+    const entrada = novaObservacaoSchema.safeParse(await request.json())
+    if (!entrada.success) {
+      return erro(400, 'VALIDACAO', entrada.error.issues[0]?.message ?? 'Observação inválida')
     }
 
-    const observacao = novaObservacao(limpo)
+    const observacao = novaObservacao(entrada.data.texto)
     nota.observacoes.push(observacao)
     return HttpResponse.json(observacao, { status: 201 })
   }),
@@ -190,7 +195,7 @@ export const handlers = [
     }
 
     const nota = db.notas.find((n) => n.documentos.some((d) => d.id === params.documentoId))
-    if (!nota) return HttpResponse.json({ message: 'Documento não encontrado' }, { status: 404 })
+    if (!nota) return erro(404, 'DOCUMENTO_NAO_ENCONTRADO', 'Documento não encontrado')
     return new HttpResponse(gerarPdfExemplo(`NF ${nota.numero} - ${nota.cliente.nome}`), {
       headers: { 'Content-Type': 'application/pdf' },
     })

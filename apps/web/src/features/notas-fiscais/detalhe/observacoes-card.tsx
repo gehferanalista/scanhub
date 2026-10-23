@@ -1,3 +1,4 @@
+import { TAMANHO_MAXIMO_OBSERVACAO, type Observacao } from '@scanhub/shared'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Loader2, MessageSquare } from 'lucide-react'
 import { useState } from 'react'
@@ -8,7 +9,6 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { formatDateTime } from '@/lib/format'
 import { adicionarObservacao, notasFiscaisQueries } from '../api'
-import { TAMANHO_MAXIMO_OBSERVACAO, type Observacao } from '../types'
 import { TituloSecao } from './titulo-secao'
 
 type ObservacoesCardProps = {

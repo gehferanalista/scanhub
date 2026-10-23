@@ -1,3 +1,16 @@
 packages:
   - apps/*
   - packages/*
+
+# Pacotes autorizados a rodar scripts de instalação (o pnpm bloqueia os demais)
+allowBuilds:
+  # usado pelo tsx; o script só valida o binário da plataforma
+  esbuild: true
+
+# Versões compartilhadas entre os pacotes (use "catalog:" no package.json)
+catalog:
+  # typescript-eslint ainda não suporta TS >= 6.1
+  typescript: ~6.0.3
+  zod: ^4.6.7
+  vitest: ^5.0.5
+  '@types/node': ^26.6.5

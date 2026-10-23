@@ -1,0 +1,33 @@
+# Serviços de apoio para DESENVOLVIMENTO LOCAL. Não usar em produção.
+#
+#   pnpm db:up      sobe o Postgres e espera ele ficar pronto
+#   pnpm db:down    para os containers (os dados continuam no volume)
+#   pnpm db:reset   apaga os dados e sobe um banco vazio
+#
+# O nome do projeto e dos recursos evita conflito com o sistema antigo, que usa "scanhub".
+name: scanhub-v2-dev
+
+services:
+  postgres:
+    # Mesma versão principal do Postgres da VM
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: scanhub
+      POSTGRES_USER: scanhub
+      # Credencial só de desenvolvimento local; produção usa usuário e senha próprios
+      POSTGRES_PASSWORD: scanhub
+    ports:
+      # Exposto só para esta máquina, não para a rede
+      - '127.0.0.1:${POSTGRES_PORT:-5432}:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U scanhub -d scanhub']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+volumes:
+  postgres_data:

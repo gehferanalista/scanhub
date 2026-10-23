@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { loginSchema, type LoginInput } from '@scanhub/shared'
 import { useMutation } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
 import { Eye, EyeOff, FileCheck2, Loader2 } from 'lucide-react'
@@ -10,7 +11,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { login } from './api'
-import { loginSchema, type LoginInput } from './types'
 
 function mensagemDeErro(error: unknown) {
   if (isAxiosError(error) && error.response?.status === 401) return 'E-mail ou senha inválidos.'

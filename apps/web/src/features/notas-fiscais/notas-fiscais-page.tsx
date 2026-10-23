@@ -1,9 +1,10 @@
+import { TAMANHO_PAGINA_PADRAO, type CampoOrdenacao } from '@scanhub/shared'
 import { useQuery } from '@tanstack/react-query'
 import { Paginacao } from '@/components/paginacao'
 import { notasFiscaisQueries } from './api'
 import { FiltrosNotasForm } from './components/filtros-notas'
 import { TabelaNotas } from './components/tabela-notas'
-import { SEM_FILTROS, TAMANHO_PAGINA, useFiltrosNotas, type CampoOrdenacao } from './filtros'
+import { SEM_FILTROS, useFiltrosNotas } from './filtros'
 
 export function NotasFiscaisPage() {
   const { filtros, atualizar } = useFiltrosNotas()
@@ -49,7 +50,7 @@ export function NotasFiscaisPage() {
       {data && data.total > 0 && (
         <Paginacao
           pagina={filtros.pagina}
-          tamanhoPagina={TAMANHO_PAGINA}
+          tamanhoPagina={TAMANHO_PAGINA_PADRAO}
           total={data.total}
           onMudarPagina={(pagina) => atualizar({ pagina })}
         />

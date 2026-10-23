@@ -1,3 +1,4 @@
+import type { Documento } from '@scanhub/shared'
 import { useQuery } from '@tanstack/react-query'
 import { Download, Loader2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -11,7 +12,6 @@ import {
 } from '@/components/ui/dialog'
 import { formatBytes } from '@/lib/format'
 import { notasFiscaisQueries } from '../api'
-import type { Documento } from '../types'
 
 type VisualizarDocumentoDialogProps = {
   documento: Documento | null
